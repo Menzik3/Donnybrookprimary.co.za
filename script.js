@@ -31,25 +31,69 @@ function initAnnouncementDismiss() {
     }
 }
 
-  /* ---- Mobile hamburger navigation ---- */
-  function initMobileNav() {
-    var toggle = document.getElementById("nav-toggle");
-    var nav = document.getElementById("primary-nav");
-    if (!toggle || !nav) return;
 
-    toggle.addEventListener("click", function () {
-      var isOpen = nav.classList.toggle("is-open");
-      toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
-    });
+/* ---- Responsive mobile hamburger navigation ---- */
+function initMobileNav() {
+  var toggle = document.getElementById("nav-toggle");
+  var nav = document.getElementById("primary-nav");
 
-    // Close the menu after a link is tapped (mobile)
-    nav.querySelectorAll("a").forEach(function (link) {
-      link.addEventListener("click", function () {
-        nav.classList.remove("is-open");
-        toggle.setAttribute("aria-expanded", "false");
-      });
-    });
+  if (!toggle || !nav) return;
+
+  function closeMenu() {
+    nav.classList.remove("is-open");
+    toggle.setAttribute("aria-expanded", "false");
   }
+
+  function openMenu() {
+    nav.classList.add("is-open");
+    toggle.setAttribute("aria-expanded", "true");
+  }
+
+  toggle.addEventListener("click", function () {
+    var isOpen = nav.classList.contains("is-open");
+
+    if (isOpen) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+  });
+
+  // Close menu when a navigation link is selected
+  nav.querySelectorAll("a").forEach(function (link) {
+    link.addEventListener("click", closeMenu);
+  });
+
+  // Close menu when clicking outside navigation
+  document.addEventListener("click", function (event) {
+    if (
+      nav.classList.contains("is-open") &&
+      !nav.contains(event.target) &&
+      !toggle.contains(event.target)
+    ) {
+      closeMenu();
+    }
+  });
+
+  // Close menu with Escape key
+  document.addEventListener("keydown", function (event) {
+    if (
+      event.key === "Escape" &&
+      nav.classList.contains("is-open")
+    ) {
+      closeMenu();
+      toggle.focus();
+    }
+  });
+
+  // Reset navigation when switching to desktop width
+  window.addEventListener("resize", function () {
+    if (window.innerWidth > 720) {
+      closeMenu();
+    }
+  });
+}
+
 
   /* ---- Shrink the header once the page is scrolled ---- */
   function initHeaderCompactOnScroll() {
